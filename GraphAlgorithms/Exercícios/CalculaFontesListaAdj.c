@@ -1,11 +1,11 @@
-//Escreva uma função que identifique os sorvedouros de um grafo.
+// escreva um programa que identifique as fontes de um grafo.
 
 #include <stdio.h>
 #include <stdlib.h>
 
 #define vertex int
-#define true 1
 #define false 0
+#define true 1
 
 typedef struct node *link;
 struct node { 
@@ -27,7 +27,7 @@ static link NEWnode( vertex w, link next) {
    return a;                         
 }
 
-Graph GraphInit( int V) {
+Graph GRAPHinit( int V) {
    Graph G = malloc( sizeof *G);
    G->V = V; 
    G->A = 0;
@@ -38,7 +38,7 @@ Graph GraphInit( int V) {
    return G;
 }
 
-void GraphInsertArc( Graph G, vertex v, vertex w) {
+void GRAPHinsertArc( Graph G, vertex v, vertex w) {
 	link a; 
 	for (a = G->adj[v]; a != NULL; a = a->next) {
 		if (a->w == w) return;
@@ -47,19 +47,17 @@ void GraphInsertArc( Graph G, vertex v, vertex w) {
 	G->A++;
 }
 
-// summary: armazena os sorvedouros de um grafo G no vetor isSink
-// returns: true se existe ao menos um sorvedouro ou false caso contrário.
-
-int sinks( Graph G, vertex* isSink) {
-	int flag = false;
+int sources( Graph G, vertex* isSource) {
 	vertex v;
+	link a;
+	int flag = false;
 	for (v = 0; v < G->V; v++) {
-		if(G->adj[v] == NULL) {
-			isSink[v] = true;
+		isSource[v] = true;
+	}
+	for (v = 0; v < G->V; v++) {
+		for (a = G->adj[v]; a != NULL; a = a->next) {
+			isSource[a->w] = false;
 			flag = true;
-		}
-		else {
-			isSink[v] = false;
 		}
 	}
 	return flag;
@@ -67,25 +65,24 @@ int sinks( Graph G, vertex* isSink) {
 
 int main()
 {
-	Graph G = GraphInit( 8);
+	Graph G = GRAPHinit( 8);
 	
-	vertex* isSink = malloc(G->V * sizeof( vertex));
+	GRAPHinsertArc( G, 0, 1);
+	GRAPHinsertArc( G, 1, 0);
+	GRAPHinsertArc( G, 2, 1);
+	GRAPHinsertArc( G, 3, 0);
+	GRAPHinsertArc( G, 7, 2);
+	GRAPHinsertArc( G, 4, 5);
+	GRAPHinsertArc( G, 6, 7);
 	
-	GraphInsertArc( G, 0, 1);
-	GraphInsertArc( G, 1, 3);
-	GraphInsertArc( G, 1, 2);
-	GraphInsertArc( G, 0, 1);
-	GraphInsertArc( G, 5, 4);
-	GraphInsertArc( G, 2, 8);
-	GraphInsertArc( G, 2, 7);
-	GraphInsertArc( G, 6, 7);
+	vertex* isSource = malloc( G->V * sizeof( vertex));
+	sources( G, isSource);
 	
-	sinks( G, isSink);
+	printf("1 - Vertice fonte\n0 - Vertice nao-fonte\n\n");
 	
-	printf("1 - Vertice sorvedouro\n0 - Vertice nao-sorvedouro\n\n");
 	vertex v;
 	for (v = 0; v < G->V; v++) {
-		printf( "vertice %d : %d\t", v, isSink[v]);
+		printf( "Vertice %d : %d\t", v, isSource[v]);
 	}
 	printf("\n");
 	
